@@ -1,0 +1,30 @@
+# dependencies
+node_modules/
+frontend/node_modules/
+
+# python
+backend/.venv/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+.Python
+
+# next.js
+frontend/.next/
+frontend/out/
+
+# misc
+.DS_Store
+.env
+backend/.env
+
+# debug
+npm-debug.log*
+
+# typescript
+*.tsbuildinfo
+frontend/next-env.d.ts
+
+# vercel
+.vercel
+frontend/.vercel
