@@ -22,13 +22,11 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 export async function analyzeResume(
   resume: File,
-  jobUrl: string,
   jobText: string
 ): Promise<AnalyzeResult> {
   const form = new FormData();
   form.append("resume", resume);
-  if (jobUrl.trim()) form.append("job_url", jobUrl.trim());
-  if (jobText.trim()) form.append("job_text", jobText.trim());
+  form.append("job_text", jobText.trim());
 
   const res = await fetch(`${API_BASE}/api/analyze`, {
     method: "POST",

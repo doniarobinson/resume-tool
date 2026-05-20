@@ -11,7 +11,7 @@ Tailor your resume to a job posting: semantic match score, prioritized rewrite s
 
 - Node.js 20+
 - Python 3.11+
-- [OpenAI API key](https://platform.openai.com/api-keys)
+- [Google Gemini API key](https://aistudio.google.com/apikey)
 
 ## Setup
 
@@ -20,10 +20,14 @@ Tailor your resume to a job posting: semantic match score, prioritized rewrite s
 ```bash
 cd backend
 python3 -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-cp ../.env.example .env     # then add your OPENAI_API_KEY
+.venv/bin/python -m pip install -r requirements.txt
+
+cp .env.example .env        # then add your GEMINI_API_KEY
 ```
+
+> **Do not** run `pip install` or `python3 -m pip install` without the venv — macOS/Homebrew Python returns `externally-managed-environment`. Always use `.venv/bin/python -m pip`.
+>
+> **Cursor note:** You can run the server without `activate`: `.venv/bin/uvicorn app.main:app --reload --port 8000`
 
 ### 2. Frontend
 
@@ -38,8 +42,9 @@ Terminal 1 — API on port 8000:
 
 ```bash
 cd backend
-source .venv/bin/activate
-uvicorn app.main:app --reload --port 8000
+.venv/bin/uvicorn app.main:app --reload --port 8000
+# Or after: source .venv/bin/activate
+# uvicorn app.main:app --reload --port 8000
 ```
 
 Terminal 2 — UI on port 3000 (proxies `/api` to backend):
@@ -54,7 +59,7 @@ Open [http://localhost:3000](http://localhost:3000).
 ## Usage
 
 1. Upload a **DOCX** resume (PDF not supported in v1).
-2. Paste a job URL and/or the full job description.
+2. Paste the full job description.
 3. Review match score and suggestions (high → medium → low).
 4. Check changes to accept, then download the tailored DOCX.
 
@@ -62,8 +67,8 @@ Open [http://localhost:3000](http://localhost:3000).
 
 - DOCX in/out only
 - Basic DOCX structure preserved (headings, paragraphs, bullets); complex layouts may shift
-- Requires OpenAI API for embeddings and suggestions
-- Job URLs may fail on protected sites — paste the description instead
+- Requires Google Gemini API for embeddings and suggestions
+- Job description must be pasted (no URL fetching — avoids server-side request risks)
 
 ## Environment variables
 

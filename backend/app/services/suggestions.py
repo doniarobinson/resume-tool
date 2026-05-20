@@ -1,9 +1,10 @@
 import json
 
-from openai import OpenAI
+from google.genai import types
 
 from app.config import settings
 from app.models.schemas import ResumeDocument, Suggestion
+from app.services.gemini_client import get_client
 
 PRIORITY_ORDER = {"high": 0, "medium": 1, "low": 2}
 
@@ -42,7 +43,7 @@ def _sort_suggestions(items: list[Suggestion]) -> list[Suggestion]:
 def generate_suggestions(
     resume: ResumeDocument, job_text: str, match_score: int
 ) -> tuple[str, str | None, list[Suggestion]]:
-    client = OpenAI(api_key=settings.openai_api_key)
+    client = get_client()
     resume_excerpt = "\n\n".join(
         f"[{b.section}] {b.text}" for b in resume.blocks[:40]
     )[:12000]
@@ -53,17 +54,16 @@ def generate_suggestions(
         f"RESUME:\n{resume_excerpt}"
     )
 
-    response = client.chat.completions.create(
-        model=settings.openai_model,
-        temperature=0.3,
-        response_format={"type": "json_object"},
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_content},
-        ],
+    response = client.models.generate_content(
+        model=settings.gemini_model,
+        contents=f"{SYSTEM_PROMPT}\n\n{user_content}",
+        config=types.GenerateContentConfig(
+            temperature=0.3,
+            response_mime_type="application/json",
+        ),
     )
 
-    raw = response.choices[0].message.content or "{}"
+    raw = response.text or "{}"
     data = json.loads(raw)
     summary = data.get("summary", "Analysis complete.")
     job_title = data.get("jobTitle")

@@ -18,6 +18,9 @@ frontend/out/
 .env
 backend/.env
 
+# editor (local Cursor/VS Code settings)
+.vscode/
+
 # debug
 npm-debug.log*
 

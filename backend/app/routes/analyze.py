@@ -22,25 +22,24 @@ def _validate_docx(upload: UploadFile, content: bytes) -> None:
 
 
 def _require_api_key() -> None:
-    if not settings.openai_api_key:
+    if not settings.gemini_api_key:
         raise HTTPException(
             status_code=503,
-            detail="OPENAI_API_KEY is not configured on the server.",
+            detail="GEMINI_API_KEY is not configured on the server.",
         )
 
 
 @router.post("/analyze", response_model=AnalyzeResponse)
 async def analyze_resume(
     resume: UploadFile = File(...),
-    job_url: str | None = Form(default=None),
-    job_text: str | None = Form(default=None),
+    job_text: str = Form(...),
 ):
     _require_api_key()
     content = await resume.read()
     _validate_docx(resume, content)
 
     try:
-        job_description = await resolve_job_text(job_url, job_text)
+        job_description = resolve_job_text(job_text)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 

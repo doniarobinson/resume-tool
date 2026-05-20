@@ -14,7 +14,6 @@ import {
 
 export default function Home() {
   const [resume, setResume] = useState<File | null>(null);
-  const [jobUrl, setJobUrl] = useState("");
   const [jobText, setJobText] = useState("");
   const [result, setResult] = useState<AnalyzeResult | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -23,9 +22,8 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
   const canAnalyze = useMemo(() => {
-    const hasJob = jobUrl.trim().length > 0 || jobText.trim().length >= 50;
-    return Boolean(resume && hasJob);
-  }, [resume, jobUrl, jobText]);
+    return Boolean(resume && jobText.trim().length >= 50);
+  }, [resume, jobText]);
 
   async function handleAnalyze() {
     if (!resume) return;
@@ -34,7 +32,7 @@ export default function Home() {
     setResult(null);
     setSelectedIds(new Set());
     try {
-      const data = await analyzeResume(resume, jobUrl, jobText);
+      const data = await analyzeResume(resume, jobText);
       setResult(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Analysis failed.");
@@ -99,12 +97,7 @@ export default function Home() {
 
       <main className="mx-auto max-w-3xl space-y-6 px-4 py-8">
         <ResumeUpload file={resume} onFileChange={setResume} />
-        <JobInput
-          jobUrl={jobUrl}
-          jobText={jobText}
-          onJobUrlChange={setJobUrl}
-          onJobTextChange={setJobText}
-        />
+        <JobInput jobText={jobText} onJobTextChange={setJobText} />
 
         <div className="flex flex-wrap gap-3">
           <button

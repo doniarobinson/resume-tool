@@ -1,8 +1,7 @@
 import math
 
-from openai import OpenAI
-
 from app.config import settings
+from app.services.gemini_client import get_client
 
 
 def _cosine_similarity(a: list[float], b: list[float]) -> float:
@@ -14,14 +13,18 @@ def _cosine_similarity(a: list[float], b: list[float]) -> float:
     return dot / (norm_a * norm_b)
 
 
-def compute_match_score(resume_text: str, job_text: str) -> int:
-    client = OpenAI(api_key=settings.openai_api_key)
-    response = client.embeddings.create(
+def _embed_text(text: str) -> list[float]:
+    client = get_client()
+    response = client.models.embed_content(
         model=settings.embedding_model,
-        input=[resume_text[:8000], job_text[:8000]],
+        contents=text[:8000],
     )
-    resume_emb = response.data[0].embedding
-    job_emb = response.data[1].embedding
+    return response.embeddings[0].values
+
+
+def compute_match_score(resume_text: str, job_text: str) -> int:
+    resume_emb = _embed_text(resume_text)
+    job_emb = _embed_text(job_text)
     similarity = _cosine_similarity(resume_emb, job_emb)
     score = int(round(max(0.0, min(1.0, (similarity + 0.2) / 1.1)) * 100))
     return max(0, min(100, score))
