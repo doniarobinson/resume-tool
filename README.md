@@ -81,21 +81,3 @@ cd backend
 .venv/bin/python -m pip install -r requirements-dev.txt
 .venv/bin/python -m pytest
 ```
-
-## Git workflow (never commit on `main`)
-
-Cursor rules in [`.cursor/rules/git-branch-workflow.mdc`](.cursor/rules/git-branch-workflow.mdc) instruct the agent (and document the team norm): **no commits or pushes on `main`** — always use a feature branch and merge via PR.
-
-### Day-to-day
-
-```bash
-git checkout main
-git pull origin main
-git checkout -b feature/my-change
-
-# work, commit on the feature branch
-git push -u origin HEAD
-gh pr create --fill
-```
-
-Merge on GitHub. Enable branch protection on `main` in the repo settings if you want the remote to enforce this too.
