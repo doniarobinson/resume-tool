@@ -18,6 +18,9 @@ frontend/out/
 .env
 backend/.env
 
+# local design explorations (not shipped)
+.dev/
+
 # editor (local Cursor/VS Code settings)
 .cursor/
 .vscode/

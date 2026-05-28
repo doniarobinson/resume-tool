@@ -7,15 +7,15 @@ interface ResumeUploadProps {
 
 export function ResumeUpload({ file, onFileChange }: ResumeUploadProps) {
   return (
-    <section className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-      <h2 className="text-lg font-semibold text-zinc-900">1. Upload resume</h2>
-      <p className="mt-1 text-sm text-zinc-600">
-        v1 supports DOCX only. Export PDF resumes to .docx first.
+    <section className="arcade-card p-6">
+      <h2 className="arcade-card-heading">1. Upload resume</h2>
+      <p className="mt-2 text-sm text-arcade-text-secondary">
+        v1 supports DOCX only.
       </p>
       <input
         type="file"
         accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        className="mt-4 block w-full text-sm text-zinc-700 file:mr-4 file:rounded-lg file:border-0 file:bg-zinc-900 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-zinc-700"
+        className="mt-4 block w-full text-sm text-arcade-text-secondary file:mr-4 file:cursor-pointer file:rounded file:border-2 file:border-arcade-border-cyan file:bg-[var(--arcade-file-btn)] file:px-4 file:py-2 file:text-sm file:font-bold file:text-arcade-text file:hover:brightness-110"
         onChange={(e) => {
           const selected = e.target.files?.[0] ?? null;
           if (!selected) {
@@ -32,7 +32,9 @@ export function ResumeUpload({ file, onFileChange }: ResumeUploadProps) {
         }}
       />
       {file && (
-        <p className="mt-2 text-sm text-emerald-700">Selected: {file.name}</p>
+        <p className="arcade-success-text mt-2 text-sm font-medium">
+          Selected: {file.name}
+        </p>
       )}
     </section>
   );
