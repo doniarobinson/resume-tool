@@ -1,26 +1,213 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+  Neon Arcade — WCAG 2.1 AA contrast targets
+  - Body text: >= 4.5:1 on background/surface
+  - Large text (18px+ / 14px bold): >= 3:1
+  - UI borders/focus: >= 3:1 vs adjacent
+*/
+
+@layer base {
+  :root {
+    --arcade-bg: #0a0a12;
+  --arcade-surface: #141422;
+  --arcade-surface-elevated: #1c1c30;
+  --arcade-text: #ffffff;
+  --arcade-text-secondary: #ebebf8;
+  --arcade-text-muted: #d6d6ec;
+  --arcade-border-cyan: #00d8f0;
+  --arcade-border-pink: #ff4da6;
+  --arcade-heading-cyan: #5cefff;
+  --arcade-heading-pink: #ff9ed0;
+  --arcade-score: #ffd933;
+  --arcade-score-high: #9dffc8;
+  --arcade-score-mid: #ffd933;
+  --arcade-score-low: #ff9ed0;
+  --arcade-success: #b8ffe0;
+  --arcade-btn-from: #ff4da6;
+  --arcade-btn-to: #00d8f0;
+  --arcade-btn-text: #0a0a12;
+  --arcade-btn-disabled-bg: #2a2a3e;
+  --arcade-btn-disabled-text: #b4b4cc;
+  --arcade-error-bg: #3a1528;
+  --arcade-error-border: #ff8ab8;
+  --arcade-error-text: #ffe8f0;
+  --arcade-focus: #ffe566;
+  --arcade-file-btn: #1e1e32;
+  --arcade-file-btn-text: #ffffff;
+  }
+
+  body {
+    background: var(--arcade-bg);
+    color: var(--arcade-text);
+    font-family: var(--font-geist-sans), system-ui, sans-serif;
+  }
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-arcade-bg: var(--arcade-bg);
+  --color-arcade-surface: var(--arcade-surface);
+  --color-arcade-surface-elevated: var(--arcade-surface-elevated);
+  --color-arcade-text: var(--arcade-text);
+  --color-arcade-text-secondary: var(--arcade-text-secondary);
+  --color-arcade-text-muted: var(--arcade-text-muted);
+  --color-arcade-heading-cyan: var(--arcade-heading-cyan);
+  --color-arcade-border-cyan: var(--arcade-border-cyan);
+  --color-arcade-border-pink: var(--arcade-border-pink);
+  --color-arcade-score: var(--arcade-score);
+  --color-arcade-success: var(--arcade-success);
+  --color-arcade-focus: var(--arcade-focus);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes arcade-header-pulse {
+  50% {
+    border-color: var(--arcade-border-pink);
+    box-shadow:
+      0 0 24px rgba(255, 77, 166, 0.35),
+      inset 0 0 16px rgba(255, 77, 166, 0.08);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+.arcade-header {
+  border: 3px solid var(--arcade-border-cyan);
+  box-shadow:
+    0 0 20px rgba(0, 216, 240, 0.25),
+    inset 0 0 12px rgba(255, 77, 166, 0.06);
+  animation: arcade-header-pulse 2.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arcade-header {
+    animation: none;
+  }
+}
+
+.arcade-title-glow {
+  text-shadow: 0 0 20px rgba(255, 77, 166, 0.45), 0 0 32px rgba(0, 216, 240, 0.35);
+}
+
+.arcade-card {
+  background: var(--arcade-surface);
+  border: 2px solid var(--arcade-border-pink);
+  border-radius: 4px;
+  box-shadow: 0 0 12px rgba(255, 77, 166, 0.12);
+}
+
+.arcade-card-heading {
+  color: var(--arcade-heading-cyan);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.arcade-btn-primary {
+  background: linear-gradient(90deg, var(--arcade-btn-from), var(--arcade-btn-to));
+  color: var(--arcade-btn-text);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.arcade-btn-primary:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.arcade-btn-primary:disabled {
+  background: var(--arcade-btn-disabled-bg);
+  color: var(--arcade-btn-disabled-text);
+  opacity: 1;
+}
+
+.arcade-btn-primary:focus-visible,
+.arcade-btn-secondary:focus-visible,
+.arcade-btn-reset:focus-visible,
+.arcade-link:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--arcade-focus);
+  outline-offset: 2px;
+}
+
+.arcade-btn-secondary {
+  background: linear-gradient(90deg, #00d8f0, #5cefff);
+  color: var(--arcade-btn-text);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.arcade-btn-secondary:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.arcade-btn-secondary:disabled {
+  background: var(--arcade-btn-disabled-bg);
+  color: var(--arcade-btn-disabled-text);
+  opacity: 1;
+}
+
+.arcade-btn-reset {
+  background: transparent;
+  border: 2px solid var(--arcade-border-cyan);
+  color: var(--arcade-text);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.arcade-btn-reset:hover:not(:disabled) {
+  background: rgba(0, 216, 240, 0.12);
+}
+
+.arcade-btn-reset:disabled {
+  border-color: #3a3a52;
+  color: var(--arcade-btn-disabled-text);
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+.arcade-input {
+  background: var(--arcade-surface-elevated);
+  border: 2px solid var(--arcade-border-cyan);
+  color: var(--arcade-text);
+}
+
+.arcade-input::placeholder {
+  color: var(--arcade-text-muted);
+}
+
+.arcade-pill-high {
+  border: 2px solid #ff8ab8;
+  color: #fff0f8;
+  background: rgba(255, 77, 166, 0.12);
+}
+
+.arcade-pill-medium {
+  border: 2px solid #ffd933;
+  color: #fffce8;
+  background: rgba(255, 217, 51, 0.1);
+}
+
+.arcade-pill-low {
+  border: 2px solid #5cefff;
+  color: #f0fdff;
+  background: rgba(92, 239, 255, 0.1);
+}
+
+.arcade-suggestion-card {
+  background: var(--arcade-surface-elevated);
+  border: 1px solid rgba(0, 216, 240, 0.35);
+}
+
+.arcade-error {
+  background: var(--arcade-error-bg);
+  border: 2px solid var(--arcade-error-border);
+  color: var(--arcade-error-text);
+}
+
+.arcade-success-text {
+  color: var(--arcade-success);
+}
 }

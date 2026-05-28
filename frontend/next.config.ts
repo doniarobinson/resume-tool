@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Analyze calls Gemini twice + LLM; default ~30s proxy limit causes "socket hang up".
+  experimental: {
+    proxyTimeout: 180_000,
+  },
   async rewrites() {
     return [
       {

@@ -1,4 +1,5 @@
 import math
+from concurrent.futures import ThreadPoolExecutor
 
 from app.config import settings
 from app.services.gemini_client import get_client
@@ -23,8 +24,11 @@ def _embed_text(text: str) -> list[float]:
 
 
 def compute_match_score(resume_text: str, job_text: str) -> int:
-    resume_emb = _embed_text(resume_text)
-    job_emb = _embed_text(job_text)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        resume_future = pool.submit(_embed_text, resume_text)
+        job_future = pool.submit(_embed_text, job_text)
+        resume_emb = resume_future.result()
+        job_emb = job_future.result()
     similarity = _cosine_similarity(resume_emb, job_emb)
     score = int(round(max(0.0, min(1.0, (similarity + 0.2) / 1.1)) * 100))
     return max(0, min(100, score))

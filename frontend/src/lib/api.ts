@@ -20,6 +20,27 @@ export interface AnalyzeResult {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "";
 
+function apiErrorMessage(data: unknown, fallback: string): string {
+  if (!data || typeof data !== "object" || !("detail" in data)) {
+    return fallback;
+  }
+  const { detail } = data as { detail?: unknown };
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail)) {
+    const parts = detail
+      .map((item) => {
+        if (typeof item === "string") return item;
+        if (item && typeof item === "object" && "msg" in item) {
+          return String((item as { msg: unknown }).msg);
+        }
+        return null;
+      })
+      .filter(Boolean);
+    if (parts.length > 0) return parts.join(" ");
+  }
+  return fallback;
+}
+
 export async function analyzeResume(
   resume: File,
   jobText: string
@@ -28,15 +49,27 @@ export async function analyzeResume(
   form.append("resume", resume);
   form.append("job_text", jobText.trim());
 
-  const res = await fetch(`${API_BASE}/api/analyze`, {
-    method: "POST",
-    body: form,
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE}/api/analyze`, {
+      method: "POST",
+      body: form,
+    });
+  } catch {
+    throw new Error(
+      "Could not reach the API. Start the backend on port 8000, then try again."
+    );
+  }
 
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
     throw new Error(
-      typeof data.detail === "string" ? data.detail : "Analysis failed."
+      apiErrorMessage(
+        data,
+        res.status === 504 || res.status === 502
+          ? "Analysis timed out or the server closed the connection. Try again in a moment."
+          : "Analysis failed."
+      )
     );
   }
   return data as AnalyzeResult;
@@ -59,9 +92,7 @@ export async function applySuggestions(
 
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
-    throw new Error(
-      typeof data.detail === "string" ? data.detail : "Could not apply changes."
-    );
+    throw new Error(apiErrorMessage(data, "Could not apply changes."));
   }
   return res.blob();
 }
